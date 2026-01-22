@@ -37,7 +37,7 @@ vercel --prod
 
 ## API Usage
 
-### Endpoint
+### Endpoint 1: Basis Email Verzenden
 ```
 POST /api/send-email
 ```
@@ -49,6 +49,63 @@ POST /api/send-email
   "subject": "Onderwerp van de email",
   "htmlBody": "<p>HTML inhoud</p>",
   "textBody": "Platte tekst versie"
+}
+```
+
+### Endpoint 2: Template Email Verzenden (Aanbevolen)
+```
+POST /api/send-template-email
+```
+
+Gebruik mooie HTML templates met de Manege Duikse Hoef layout.
+
+#### Credentials Template
+```json
+{
+  "to": "klant@example.com",
+  "subject": "Inloggegevens - Manege Duikse Hoef",
+  "template": "credentials",
+  "customerName": "Jan Jansen",
+  "customerEmail": "jan@example.com",
+  "password": "WACHTWOORD123",
+  "appUrl": "https://manege-duikse-hoef.vercel.app"
+}
+```
+
+#### Payment Template
+```json
+{
+  "to": "klant@example.com",
+  "subject": "Betaalverzoek - Manege Duikse Hoef",
+  "template": "payment",
+  "customerName": "Jan Jansen",
+  "paymentDescription": "Leskaart 10 lessen",
+  "paymentAmount": 150.00,
+  "paymentUrl": "https://example.com/payment"
+}
+```
+
+#### Custom Template
+```json
+{
+  "to": "klant@example.com",
+  "subject": "Onderwerp",
+  "template": "custom",
+  "title": "Titel van de email",
+  "greeting": "Beste klant,",
+  "content": "<p>Je custom HTML content hier</p>",
+  "buttonText": "Klik hier",
+  "buttonUrl": "https://example.com",
+  "showButton": true
+}
+```
+
+#### Test Template
+```json
+{
+  "to": "test@example.com",
+  "subject": "Test Email",
+  "template": "test"
 }
 ```
 
