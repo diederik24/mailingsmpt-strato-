@@ -20,7 +20,7 @@ export default async function handler(
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-API-Key');
 
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -32,6 +32,25 @@ export default async function handler(
     return res.status(405).json({ 
       success: false,
       error: 'Method not allowed. Only POST requests are supported.' 
+    });
+  }
+
+  // Check API key
+  const apiKey = req.headers['x-api-key'] as string;
+  const expectedApiKey = process.env.EMAIL_API_KEY;
+
+  if (!expectedApiKey) {
+    console.error('EMAIL_API_KEY not configured in environment variables');
+    return res.status(500).json({
+      success: false,
+      error: 'Server configuration error: EMAIL_API_KEY not set',
+    });
+  }
+
+  if (!apiKey || apiKey !== expectedApiKey) {
+    return res.status(401).json({
+      success: false,
+      error: 'Invalid or missing API key. Provide X-API-Key header.',
     });
   }
 

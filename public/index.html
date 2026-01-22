@@ -53,10 +53,19 @@
         
         <div class="status">✅ Online</div>
         
-        <h2>API Endpoint</h2>
+        <h2>API Endpoints</h2>
         <div class="endpoint">
-            <strong>POST</strong> <code>/api/send-email</code>
+            <strong>POST</strong> <code>/api/send-email</code><br>
+            <strong>POST</strong> <code>/api/send-template-email</code>
         </div>
+        
+        <h3>⚠️ API Key Vereist</h3>
+        <p style="color: #666;">Alle requests vereisen een <code>X-API-Key</code> header voor beveiliging.</p>
+        
+        <h3>Request Headers</h3>
+        <pre style="background: #f9f9f9; padding: 15px; border-radius: 5px; overflow-x: auto;">
+Content-Type: application/json
+X-API-Key: jouw-api-key-hier</pre>
         
         <h3>Request Body</h3>
         <pre style="background: #f9f9f9; padding: 15px; border-radius: 5px; overflow-x: auto;">
