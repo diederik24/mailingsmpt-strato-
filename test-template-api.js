@@ -1,7 +1,9 @@
 // Test script voor de template email API
 // Gebruik: node test-template-api.js
 
-const API_URL = process.env.API_URL || 'https://mailingsmpt-strato.vercel.app/api/send-template-email';
+const config = require('./config');
+
+const API_URL = `${config.API_URL}/api/send-template-email`;
 
 async function testTemplateEmailAPI() {
   try {
@@ -25,6 +27,7 @@ async function testTemplateEmailAPI() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': config.API_KEY,
       },
       body: JSON.stringify(credentialsData),
     });
@@ -58,6 +61,7 @@ async function testTemplateEmailAPI() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': config.API_KEY,
       },
       body: JSON.stringify(paymentData),
     });

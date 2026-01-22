@@ -17,6 +17,7 @@ Zet de volgende environment variables in Vercel:
 - `STRATO_USER` - Je Strato email adres (bijv. `info@manegeduiksehoef.nl`)
 - `STRATO_PASSWORD` - Je Strato email wachtwoord
 - `STRATO_FROM_EMAIL` (optioneel) - Email adres voor "from" veld (default: STRATO_USER)
+- `EMAIL_API_KEY` - **VERPLICHT** - API key voor beveiliging (bijv. `manege-strato-email-2026-secure-key-99xtif26dpbjjnp9x4hzrh`)
 
 ### 3. Deploy naar Vercel
 
@@ -130,10 +131,13 @@ Gebruik mooie HTML templates met de Manege Duikse Hoef layout.
 
 ### JavaScript/TypeScript
 ```javascript
+const API_KEY = 'manege-strato-email-2026-secure-key-99xtif26dpbjjnp9x4hzrh'; // Je API key uit Vercel
+
 const response = await fetch('https://jouw-project.vercel.app/api/send-email', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
+    'X-API-Key': API_KEY, // ← Verplicht!
   },
   body: JSON.stringify({
     to: 'klant@example.com',
@@ -151,6 +155,7 @@ console.log(result);
 ```bash
 curl -X POST https://jouw-project.vercel.app/api/send-email \
   -H "Content-Type: application/json" \
+  -H "X-API-Key: manege-strato-email-2026-secure-key-99xtif26dpbjjnp9x4hzrh" \
   -d '{
     "to": "klant@example.com",
     "subject": "Test Email",
@@ -165,6 +170,7 @@ curl -X POST https://jouw-project.vercel.app/api/send-email \
 - ✅ Strato SMTP integratie
 - ✅ HTML en plain text support
 - ✅ Email validatie
+- ✅ **API key beveiliging**
 - ✅ CORS support
 - ✅ Proper error handling
 - ✅ Production-ready

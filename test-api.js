@@ -1,7 +1,9 @@
 // Test script voor de email API
 // Gebruik: node test-api.js
 
-const API_URL = process.env.API_URL || 'http://localhost:3000/api/send-email';
+const config = require('./config');
+
+const API_URL = `${config.API_URL}/api/send-email`;
 
 async function testEmailAPI() {
   try {
@@ -35,6 +37,7 @@ Tijdstip: ${new Date().toLocaleString('nl-NL')}
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': config.API_KEY,
       },
       body: JSON.stringify(emailData),
     });
