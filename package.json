@@ -1,0 +1,27 @@
+{
+  "name": "manege-strato-email-service",
+  "version": "1.0.0",
+  "description": "Email service voor Manege Duikse Hoef via Strato SMTP",
+  "main": "api/send-email.ts",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "email",
+    "smtp",
+    "strato",
+    "nodemailer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/node": "^3.0.0",
+    "nodemailer": "^6.9.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "^5.8.2"
+  }
+}

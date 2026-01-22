@@ -1,0 +1,132 @@
+# Manege Duikse Hoef Email Service
+
+Email service voor het versturen van emails via Strato SMTP via Vercel API Routes.
+
+## Setup
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Environment Variables
+
+Zet de volgende environment variables in Vercel:
+
+- `STRATO_USER` - Je Strato email adres (bijv. `info@manegeduiksehoef.nl`)
+- `STRATO_PASSWORD` - Je Strato email wachtwoord
+- `STRATO_FROM_EMAIL` (optioneel) - Email adres voor "from" veld (default: STRATO_USER)
+
+### 3. Deploy naar Vercel
+
+#### Via Vercel CLI:
+```bash
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+#### Via GitHub + Vercel:
+1. Push naar GitHub repository
+2. Ga naar [Vercel Dashboard](https://vercel.com/dashboard)
+3. Klik "New Project"
+4. Import je GitHub repository
+5. Zet environment variables in Vercel dashboard
+6. Deploy
+
+## API Usage
+
+### Endpoint
+```
+POST /api/send-email
+```
+
+### Request Body
+```json
+{
+  "to": "email@example.com",
+  "subject": "Onderwerp van de email",
+  "htmlBody": "<p>HTML inhoud</p>",
+  "textBody": "Platte tekst versie"
+}
+```
+
+### Response (Success)
+```json
+{
+  "success": true,
+  "message": "Email succesvol verstuurd naar email@example.com",
+  "messageId": "<message-id>"
+}
+```
+
+### Response (Error)
+```json
+{
+  "success": false,
+  "error": "Error message"
+}
+```
+
+## Voorbeeld gebruik
+
+### JavaScript/TypeScript
+```javascript
+const response = await fetch('https://jouw-project.vercel.app/api/send-email', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    to: 'klant@example.com',
+    subject: 'Welkom bij Manege Duikse Hoef',
+    htmlBody: '<h1>Welkom!</h1><p>Bedankt voor je aanmelding.</p>',
+    textBody: 'Welkom! Bedankt voor je aanmelding.',
+  }),
+});
+
+const result = await response.json();
+console.log(result);
+```
+
+### cURL
+```bash
+curl -X POST https://jouw-project.vercel.app/api/send-email \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "klant@example.com",
+    "subject": "Test Email",
+    "htmlBody": "<p>Dit is een test</p>",
+    "textBody": "Dit is een test"
+  }'
+```
+
+## Features
+
+- ✅ Node.js runtime (geen Edge Function timeouts)
+- ✅ Strato SMTP integratie
+- ✅ HTML en plain text support
+- ✅ Email validatie
+- ✅ CORS support
+- ✅ Proper error handling
+- ✅ Production-ready
+
+## Troubleshooting
+
+### Email komt niet aan
+- Check spam folder
+- Controleer of STRATO_USER en STRATO_PASSWORD correct zijn ingesteld
+- Check Vercel function logs voor errors
+
+### Timeout errors
+- Dit zou niet moeten voorkomen met Node.js runtime
+- Check Vercel function logs voor meer details
+
+### CORS errors
+- CORS headers zijn al ingesteld
+- Zorg dat je de juiste Content-Type header gebruikt
+
+## License
+
+MIT
