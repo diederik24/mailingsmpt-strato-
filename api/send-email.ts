@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
+import { createClient } from '@supabase/supabase-js';
 
 // Expliciet Node.js runtime gebruiken (NIET Edge)
 export const config = {
@@ -11,6 +12,16 @@ interface EmailPayload {
   subject: string;
   htmlBody?: string;
   textBody?: string;
+  // Payment tracking velden (optioneel)
+  paymentId?: string;
+  paymentUrl?: string;
+  paymentAmount?: number;
+  paymentDescription?: string;
+  // Email tracking velden (optioneel)
+  toName?: string;
+  content?: string;
+  recipientsEmails?: string[];
+  recipientsNames?: string[];
 }
 
 export default async function handler(
@@ -55,7 +66,20 @@ export default async function handler(
   }
 
   try {
-    const { to, subject, htmlBody, textBody }: EmailPayload = req.body;
+    const { 
+      to, 
+      subject, 
+      htmlBody, 
+      textBody,
+      paymentId,
+      paymentUrl,
+      paymentAmount,
+      paymentDescription,
+      toName,
+      content,
+      recipientsEmails,
+      recipientsNames,
+    }: EmailPayload = req.body;
 
     // Valideer verplichte velden
     if (!to || !subject) {
@@ -124,6 +148,61 @@ export default async function handler(
     console.log(`Sending email to: ${to}`);
     const info = await transporter.sendMail(mailOptions);
     console.log(`Email sent successfully: ${info.messageId}`);
+
+    // Sla email op in Supabase sent_emails tabel (als payment info wordt meegegeven of als andere tracking velden worden meegegeven)
+    if (paymentId || toName || content) {
+      try {
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        
+        if (supabaseUrl && supabaseServiceRoleKey) {
+          const supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey);
+          
+          const emailRecord: any = {
+            to_email: to,
+            to_name: toName || null,
+            subject: subject,
+            content: content || subject,
+            html_content: htmlBody || null,
+            recipients_count: recipientsEmails?.length || recipientsNames?.length || 1,
+            recipients_emails: recipientsEmails || [to],
+            recipients_names: recipientsNames || (toName ? [toName] : null),
+            sent_at: new Date().toISOString(),
+          };
+
+          // Voeg payment tracking velden toe als ze worden meegegeven
+          if (paymentId) {
+            emailRecord.payment_id = paymentId;
+            emailRecord.payment_status = 'open';
+          }
+          if (paymentUrl) {
+            emailRecord.payment_url = paymentUrl;
+          }
+          if (paymentAmount !== undefined) {
+            emailRecord.payment_amount = paymentAmount;
+          }
+          if (paymentDescription) {
+            emailRecord.payment_description = paymentDescription;
+          }
+
+          const { error: insertError } = await supabaseClient
+            .from('sent_emails')
+            .insert(emailRecord);
+
+          if (insertError) {
+            console.error('Error saving email to database:', insertError);
+            // Ga door, want email is al verstuurd
+          } else {
+            console.log('Email saved to sent_emails with payment tracking:', paymentId || 'no payment');
+          }
+        } else {
+          console.warn('Supabase credentials not configured, skipping database save');
+        }
+      } catch (dbError: any) {
+        console.error('Error saving email to database:', dbError);
+        // Ga door, want email is al verstuurd
+      }
+    }
 
     // Sluit transporter af
     transporter.close();
